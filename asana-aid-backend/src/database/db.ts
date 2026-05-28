@@ -3,9 +3,17 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const connectionString = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+
+if (!connectionString && !process.env.DB_HOST) {
+  throw new Error(
+    'Database configuration missing. Set DATABASE_URL or DATABASE_PUBLIC_URL on the backend service.'
+  );
+}
+
 const pool = new Pool(
-  process.env.DATABASE_URL
-    ? { connectionString: process.env.DATABASE_URL }
+  connectionString
+    ? { connectionString }
     : {
         user: process.env.DB_USER,
         host: process.env.DB_HOST,
