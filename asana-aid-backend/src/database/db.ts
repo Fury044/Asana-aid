@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL missing');
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
@@ -10,7 +14,12 @@ const pool = new Pool({
   },
 });
 
-export default pool;
+pool.connect()
+  .then(() => console.log('✅ PostgreSQL Connected'))
+  .catch((err) => console.error('❌ PostgreSQL Connection Error:', err));
 
-export const query = (text: string, params?: any[]) =>
-  pool.query(text, params);
+export const query = (text: string, params?: any[]) => {
+  return pool.query(text, params);
+};
+
+export default pool;
