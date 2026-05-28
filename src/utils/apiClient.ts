@@ -1,5 +1,7 @@
 const LOCAL_API = "http://localhost:5000/api/v1";
-const PROD_API = "https://asana-aid-production.up.railway.app/api/v1";
+const PROD_API =
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://asana-aid-production-188f.up.railway.app/api/v1";
 
 // Point to local by default for dev, but PROD-API remains as fallback
 let activeBase = PROD_API;
