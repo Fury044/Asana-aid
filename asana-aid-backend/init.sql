@@ -10,6 +10,8 @@
 -- [YogaPrograms] 1 --- N [YogaSessions]
 -- [YogaSessions] 1 --- N [SessionPoses] N --- 1 [YogaPoses]
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- Users and Profiles
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -68,6 +70,17 @@ CREATE TABLE yoga_programs (
     created_by UUID REFERENCES users(id) -- Could be null for system-generated programs
 );
 
+-- Plans and Progress
+CREATE TABLE user_plans (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    start_date DATE DEFAULT CURRENT_DATE,
+    end_date DATE,
+    is_active BOOLEAN DEFAULT TRUE,
+    plan_config JSONB, -- Stores the parameters used to generate the plan
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE yoga_sessions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     program_id UUID REFERENCES yoga_programs(id) ON DELETE CASCADE,
@@ -84,17 +97,6 @@ CREATE TABLE session_poses (
     pose_id UUID REFERENCES yoga_poses(id) ON DELETE CASCADE,
     order_index INT NOT NULL,
     duration_override INT -- Optional duration specifically for this session
-);
-
--- Plans and Progress
-CREATE TABLE user_plans (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    start_date DATE DEFAULT CURRENT_DATE,
-    end_date DATE,
-    is_active BOOLEAN DEFAULT TRUE,
-    plan_config JSONB, -- Stores the parameters used to generate the plan
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE session_progress (
