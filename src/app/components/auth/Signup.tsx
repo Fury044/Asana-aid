@@ -37,7 +37,8 @@ export default function Signup() {
         }));
         navigate("/onboarding/basic-info");
       } else {
-        setError(data.message || "Signup failed");
+        const details = [data.message, data.detail, data.code].filter(Boolean).join(" - ");
+        setError(details || "Signup failed");
       }
     } catch (err) {
       console.error("Auth error:", err);
