@@ -11,7 +11,24 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://asana-aid.netlify.app',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error('Not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Main Routes
